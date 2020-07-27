@@ -54,10 +54,10 @@ func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
 	log.Println(ipfsHash)
 
 	newBox := core.Box{
-		IpfsID: ipfsHash,
-		Name:   filename,
-		Lat:    0,
-		Lng:    0,
+		IPFSHash: ipfsHash,
+		Name:     filename,
+		Lat:      0,
+		Lng:      0,
 	}
 
 	if err := s.repository.Create(&newBox); err != nil {

@@ -7,12 +7,19 @@ package controllers
 
 import (
 	"errors"
+	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 	"time"
 )
+
+var tempDir string
+
+func InitControllers(config *config.Config) {
+	tempDir = config.TemporaryDir
+}
 
 func withId(handler func(c *gin.Context, id string)) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -61,7 +68,7 @@ func withFile(handler func(c *gin.Context, filename, tmpFilename string)) gin.Ha
 		log.Println(file.Filename)
 
 		// absFilename - absolute filename for temporary file
-		absFilename := bc.tempDir + string(time.Now().Unix())
+		absFilename := tempDir + string(time.Now().Unix())
 
 		// Defer removing file after putting it to IPFS
 		defer os.Remove(absFilename)

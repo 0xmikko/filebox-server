@@ -8,10 +8,10 @@ package core
 type (
 	Box struct {
 		BaseModel
-		IpfsID string
-		Name   string
-		Lat    float64
-		Lng    float64
+		IPFSHash string
+		Name     string
+		Lat      float64
+		Lng      float64
 	}
 
 	BoxRepositoryI interface {

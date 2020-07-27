@@ -46,7 +46,7 @@ func (bc *BoxController) ListByCoord(c *gin.Context) {
 }
 
 // GET: /api/boxes/:id/
-// Return Box info for particular id
+// Return Box info for IPFS hash
 func (bc *BoxController) Retrieve(c *gin.Context, id string) {
 	result, err := bc.service.Retrieve(id)
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 
 var Module = fx.Options(
 	fx.Invoke(
+		InitControllers,
 		RegisterAuthController,
 		RegisterBoxController),
 	fx.Provide(NewServer))
