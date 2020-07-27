@@ -5,8 +5,6 @@
 
 package core
 
-import "io"
-
 type (
 	Box struct {
 		BaseModel
@@ -21,7 +19,7 @@ type (
 	}
 
 	BoxServiceI interface {
-		Create(r io.Reader, name string) (*Box, error)
+		Create(tmpFilename, filename string) (*Box, error)
 		FindBoxesAround() ([]Box, error)
 		Retrieve(id string) (*Box, error)
 	}

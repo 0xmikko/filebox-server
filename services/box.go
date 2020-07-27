@@ -8,8 +8,8 @@ package services
 import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
-	"io"
 	"log"
+	"os"
 )
 
 type boxService struct {
@@ -38,10 +38,16 @@ func (s *boxService) FindBoxesAround() ([]core.Box, error) {
 }
 
 // Creates a new box and return it
-func (s *boxService) Create(r io.Reader, name string) (*core.Box, error) {
-	ipfsHash, err := s.ipfs.AddFile(r)
+func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
 
-	if err!= nil {
+	// Getting io.Reader by opening file
+	r, err := os.Open(tmpFilename)
+	if err != nil {
+		return nil, err
+	}
+
+	ipfsHash, err := s.ipfs.AddFile(r)
+	if err != nil {
 		return nil, err
 	}
 
@@ -49,7 +55,7 @@ func (s *boxService) Create(r io.Reader, name string) (*core.Box, error) {
 
 	newBox := core.Box{
 		IpfsID: ipfsHash,
-		Name:   name,
+		Name:   filename,
 		Lat:    0,
 		Lng:    0,
 	}
@@ -60,6 +66,3 @@ func (s *boxService) Create(r io.Reader, name string) (*core.Box, error) {
 
 	return &newBox, nil
 }
-
-
-

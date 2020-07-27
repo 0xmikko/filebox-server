@@ -9,6 +9,9 @@ import (
 	"errors"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
 	"github.com/gin-gonic/gin"
+	"log"
+	"os"
+	"time"
 )
 
 func withId(handler func(c *gin.Context, id string)) gin.HandlerFunc {
@@ -47,4 +50,28 @@ func withPrincipalAndId(handler func(c *gin.Context, userId string, id string)) 
 
 		handler(c, userID, id)
 	})
+}
+
+func withFile(handler func(c *gin.Context, filename, tmpFilename string)) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		file, err := c.FormFile("file")
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(file.Filename)
+
+		// absFilename - absolute filename for temporary file
+		absFilename := bc.tempDir + string(time.Now().Unix())
+
+		// Defer removing file after putting it to IPFS
+		defer os.Remove(absFilename)
+
+		// Saving file on disk
+		err = c.SaveUploadedFile(file, absFilename)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		handler(c, file.Filename, absFilename)
+	}
 }
