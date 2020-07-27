@@ -5,7 +5,8 @@
 
 package core
 
+import "io"
 
-type IPFSService interface {
-
+type IPFSRepositoryI interface {
+	AddFile(r io.Reader) (string, error)
 }

@@ -11,4 +11,5 @@ import (
 
 var Module = fx.Provide(ConnectDB,
 	NewBoxesRepository,
-	NewUsersRepository)
+	NewUsersRepository,
+	NewIPFSClient)

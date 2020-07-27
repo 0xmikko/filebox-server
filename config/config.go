@@ -13,6 +13,9 @@ type Config struct {
 
 	Env string `env:"ENV" default:"development" validate:"required"`
 
+	IpfsEndpoint string `env:"IPFS_ENDPOINT" validate:"required"`
+	TemporaryDir string `env:"TEMP_DIR" default:"tmp/" validate:"required"`
+
 	SentryDSN   string `env:"SENTRY_DSN" validate:"required"`
 	SSLRedirect string `env:"SSL_REDIRECT" validate:"required"`
 
