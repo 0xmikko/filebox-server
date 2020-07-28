@@ -46,9 +46,9 @@ func NewServer(config *config.Config) *gin.Engine {
 func StartServer(lc fx.Lifecycle, config *config.Config, g *gin.Engine) {
 	// Starting server
 	addr := ":" + config.Port
-	if config.Env != "PROD" {
-		addr = "localhost" + addr
-	}
+	//if config.Env != "PROD" {
+	//	addr = "localhost" + addr
+	//}
 
 	lc.Append(fx.Hook{
 		// To mitigate the impact of deadlocks in application startup and

@@ -27,11 +27,11 @@ func ConnectDB(config *config.Config) *mongo.Database {
 	}
 
 	// Defer DB close
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
+	//defer func() {
+	//	if err = client.Disconnect(ctx); err != nil {
+	//		panic(err)
+	//	}
+	//}()
 
 	// Ping the primary
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
