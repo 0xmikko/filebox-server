@@ -46,15 +46,8 @@ func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
 		return nil, err
 	}
 
-	ipfsHash, err := s.ipfs.AddFile(r)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Println(ipfsHash)
-
 	newBox := core.Box{
-		IPFSHash: ipfsHash,
+		IPFSHash: "",
 		Name:     filename,
 		Lat:      0,
 		Lng:      0,
@@ -63,6 +56,20 @@ func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
 	if err := s.repository.Create(&newBox); err != nil {
 		return nil, err
 	}
+
+	log.Println(newBox)
+
+	go func() {
+		ipfsHash, err := s.ipfs.AddFile(r)
+		if err != nil {
+			return
+		}
+		log.Println(ipfsHash)
+		newBox.IPFSHash = ipfsHash
+		if err := s.repository.Save(&newBox); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	return &newBox, nil
 }
