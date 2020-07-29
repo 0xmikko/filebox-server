@@ -24,3 +24,7 @@ func NewIPFSClient(config *config.Config) core.IPFSRepositoryI {
 func (sh *IPFSClient) AddFile(r io.Reader) (string, error) {
 	return sh.shell.Add(r)
 }
+
+func (sh *IPFSClient) GetFile(ipfsHash string) ([]byte, error) {
+	panic("implement me")
+}

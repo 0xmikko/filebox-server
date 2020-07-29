@@ -8,6 +8,7 @@ package services
 import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
+	"github.com/MikaelLazarev/filebox-server/payload"
 	"log"
 	"os"
 )
@@ -38,7 +39,7 @@ func (s *boxService) FindBoxesAround() ([]core.Box, error) {
 }
 
 // Creates a new box and return it
-func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
+func (s *boxService) Create(boxDTO payload.BoxCreateRequest, tmpFilename, filename string) (*core.Box, error) {
 
 	// Getting io.Reader by opening file
 	r, err := os.Open(tmpFilename)
@@ -47,10 +48,10 @@ func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
 	}
 
 	newBox := core.Box{
-		IPFSHash: "",
-		Name:     filename,
-		Lat:      0,
-		Lng:      0,
+		Name:     boxDTO.Name,
+		Lat:      boxDTO.Lat,
+		Lng:      boxDTO.Lng,
+		Altitude: boxDTO.Altitude,
 	}
 
 	if err := s.repository.Create(&newBox); err != nil {
@@ -59,17 +60,18 @@ func (s *boxService) Create(tmpFilename, filename string) (*core.Box, error) {
 
 	log.Println(newBox)
 
-	go func() {
-		ipfsHash, err := s.ipfs.AddFile(r)
-		if err != nil {
-			return
-		}
-		log.Println(ipfsHash)
-		newBox.IPFSHash = ipfsHash
-		if err := s.repository.Save(&newBox); err != nil {
-			log.Println(err)
-		}
-	}()
+	//go func() {
+	ipfsHash, err := s.ipfs.AddFile(r)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	log.Println(ipfsHash)
+	newBox.IPFSHash = ipfsHash
+	if err := s.repository.Save(&newBox); err != nil {
+		log.Println(err)
+	}
+	//}()
 
 	return &newBox, nil
 }

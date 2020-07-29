@@ -9,4 +9,5 @@ import "io"
 
 type IPFSRepositoryI interface {
 	AddFile(r io.Reader) (string, error)
+	GetFile(ipfsHash string) ([]byte, error)
 }

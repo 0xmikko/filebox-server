@@ -11,7 +11,7 @@ import (
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
 	"github.com/gin-gonic/gin"
 	"log"
-	"os"
+	"strconv"
 	"time"
 )
 
@@ -68,10 +68,12 @@ func withFile(handler func(c *gin.Context, filename, tmpFilename string)) gin.Ha
 		log.Println(file.Filename)
 
 		// absFilename - absolute filename for temporary file
-		absFilename := tempDir + string(time.Now().Unix())
+		absFilename := tempDir + strconv.Itoa(int(time.Now().Unix()))
+
+		log.Println(absFilename)
 
 		// Defer removing file after putting it to IPFS
-		defer os.Remove(absFilename)
+		//defer os.Remove(absFilename)
 
 		// Saving file on disk
 		err = c.SaveUploadedFile(file, absFilename)

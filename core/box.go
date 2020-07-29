@@ -5,6 +5,8 @@
 
 package core
 
+import p "github.com/MikaelLazarev/filebox-server/payload"
+
 type (
 	Box struct {
 		BaseModel
@@ -12,6 +14,7 @@ type (
 		Name     string
 		Lat      float64
 		Lng      float64
+		Altitude float64
 	}
 
 	BoxRepositoryI interface {
@@ -19,7 +22,7 @@ type (
 	}
 
 	BoxServiceI interface {
-		Create(tmpFilename, filename string) (*Box, error)
+		Create(request p.BoxCreateRequest, tmpFilename, filename string) (*Box, error)
 		FindBoxesAround() ([]Box, error)
 		Retrieve(id string) (*Box, error)
 	}

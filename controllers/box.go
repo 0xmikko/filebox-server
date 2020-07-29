@@ -6,9 +6,12 @@
 package controllers
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
+	p "github.com/MikaelLazarev/filebox-server/payload"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -61,8 +64,17 @@ func (bc *BoxController) Retrieve(c *gin.Context, id string) {
 // Returns 201 if successfully created
 func (bc *BoxController) Upload(c *gin.Context, filename, tmpFilename string) {
 
+	var dto p.BoxCreateRequest
+
+	// Getting box data from request
+	boxJson := c.PostForm("box")
+	if err := json.Unmarshal([]byte(boxJson), &dto); err != nil {
+		errorhandler.ResponseWithAPIError(c, errorhandler.HttpBadRequestError(errors.New("Cant get box")))
+		return
+	}
+
 	// Creating Box with file contents
-	result, err := bc.service.Create(tmpFilename, filename)
+	result, err := bc.service.Create(dto, tmpFilename, filename)
 	if err != nil {
 		errorhandler.ResponseWithAPIError(c, err)
 		return

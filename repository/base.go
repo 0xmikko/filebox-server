@@ -37,16 +37,16 @@ func (basicRepo *BaseRepository) FindAll(result interface{}) error {
 
 func (basicRepo *BaseRepository) Create(item core.BaseModelI) error {
 	result, err := basicRepo.Col.InsertOne(context.Background(), item)
-	println(result.InsertedID.(primitive.ObjectID).Hex())
 	item.SetID(result.InsertedID.(primitive.ObjectID))
 	return err
 }
 
 func (basicRepo *BaseRepository) Save(item core.BaseModelI) error {
 	id := item.GetID()
-	result, error := basicRepo.Col.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{
-		"$set": item,
-	})
+	result, error := basicRepo.Col.UpdateOne(context.Background(),
+		bson.M{"_id": id},
+		bson.M{"$set": item},
+	)
 	log.Println(result)
 	return error
 }
