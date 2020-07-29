@@ -60,18 +60,18 @@ func (s *boxService) Create(boxDTO payload.BoxCreateRequest, tmpFilename, filena
 
 	log.Println(newBox)
 
-	//go func() {
-	ipfsHash, err := s.ipfs.AddFile(r)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	log.Println(ipfsHash)
-	newBox.IPFSHash = ipfsHash
-	if err := s.repository.Save(&newBox); err != nil {
-		log.Println(err)
-	}
-	//}()
+	go func() {
+		ipfsHash, err := s.ipfs.AddFile(r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(ipfsHash)
+		newBox.IPFSHash = ipfsHash
+		if err := s.repository.Save(&newBox); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	return &newBox, nil
 }

@@ -10,11 +10,11 @@ import p "github.com/MikaelLazarev/filebox-server/payload"
 type (
 	Box struct {
 		BaseModel
-		IPFSHash string
-		Name     string
-		Lat      float64
-		Lng      float64
-		Altitude float64
+		IPFSHash string  `json:"ipfs_hash"`
+		Name     string  `json:"name"`
+		Lat      float64 `json:"lat"`
+		Lng      float64 `json:"lng"`
+		Altitude float64 `json:"altitude"`
 	}
 
 	BoxRepositoryI interface {
