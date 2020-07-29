@@ -52,6 +52,7 @@ func (s *boxService) Create(boxDTO payload.BoxCreateRequest, tmpFilename, filena
 		Lat:      boxDTO.Lat,
 		Lng:      boxDTO.Lng,
 		Altitude: boxDTO.Altitude,
+		Content:  "Owner doesn't provided description yet.",
 	}
 
 	if err := s.repository.Create(&newBox); err != nil {
