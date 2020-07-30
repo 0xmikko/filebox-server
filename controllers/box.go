@@ -11,7 +11,6 @@ import (
 	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
-	p "github.com/MikaelLazarev/filebox-server/payload"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -39,7 +38,7 @@ func RegisterBoxController(config *config.Config, g *gin.Engine, ls core.BoxServ
 // GET: /api/boxes/
 // Returns array of boxes around user by his/her coordinate
 func (bc *BoxController) ListByCoord(c *gin.Context) {
-	result, err := bc.service.FindBoxesAround()
+	result, err := bc.service.FindNearAndTopBoxes()
 	if err != nil {
 		errorhandler.ResponseWithAPIError(c, err)
 		return
@@ -64,7 +63,7 @@ func (bc *BoxController) Retrieve(c *gin.Context, id string) {
 // Returns 201 if successfully created
 func (bc *BoxController) Upload(c *gin.Context, filename, tmpFilename string) {
 
-	var dto p.BoxCreateRequest
+	var dto core.BoxCreateRequest
 
 	// Getting box data from request
 	boxJson := c.PostForm("box")

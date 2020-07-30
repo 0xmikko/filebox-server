@@ -8,7 +8,6 @@ package controllers
 import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
-	"github.com/MikaelLazarev/filebox-server/payload"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -29,11 +28,10 @@ func RegisterAuthController(g *gin.Engine, is core.UsersServiceI) {
 
 }
 
-
 // POST: /auth/token/refresh
 func (u *authController) RefreshToken(c *gin.Context) {
 
-	var tokenReq payload.RefreshTokenReq
+	var tokenReq core.RefreshTokenReq
 
 	if err := c.BindJSON(&tokenReq); err != nil {
 		errorhandler.ResponseWithAPIError(c, errorhandler.HttpBadRequestError(err))

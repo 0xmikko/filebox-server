@@ -5,8 +5,6 @@
 
 package core
 
-import p "github.com/MikaelLazarev/filebox-server/payload"
-
 type (
 	User struct {
 		ID    string
@@ -22,7 +20,7 @@ type (
 	}
 
 	UsersServiceI interface {
-		Retrieve(id string) (*p.UserRes, error)
-		RefreshToken(refreshToken string) (*p.TokenPair, error)
+		Retrieve(id string) (*UserRes, error)
+		RefreshToken(refreshToken string) (*TokenPair, error)
 	}
 )

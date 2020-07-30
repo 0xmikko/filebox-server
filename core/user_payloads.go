@@ -3,7 +3,7 @@
  * Copyright (c) 2020. Mikhail Lazarev
  */
 
-package payload
+package core
 
 type (
 	TokenPair struct {
@@ -16,7 +16,7 @@ type (
 	}
 
 	UserRes struct {
-		Name string `json:"name"`
+		Name  string `json:"name"`
 		Score string `json:"score"`
 	}
 )

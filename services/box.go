@@ -8,7 +8,6 @@ package services
 import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
-	"github.com/MikaelLazarev/filebox-server/payload"
 	"log"
 	"os"
 )
@@ -33,13 +32,25 @@ func (s *boxService) Retrieve(id string) (*core.Box, error) {
 	return &box, nil
 }
 
-// Find boxes around
-func (s *boxService) FindBoxesAround() ([]core.Box, error) {
-	panic("implement me")
+// Find near & top boxes around
+func (s *boxService) FindNearAndTopBoxes() (*core.BoxListResponse, error) {
+	response := core.BoxListResponse{
+		Near: make([]core.Box, 0, 0),
+		Top:  make([]core.Box, 0, 0),
+	}
+
+	if err := s.repository.FindNearBoxes(&response.Near); err != nil {
+		return nil, errorhandler.DBError(err, "Box not found")
+	}
+	if err := s.repository.FindTopBoxes(&response.Top); err != nil {
+		return nil, errorhandler.DBError(err, "Box not found")
+	}
+
+	return &response, nil
 }
 
 // Creates a new box and return it
-func (s *boxService) Create(boxDTO payload.BoxCreateRequest, tmpFilename, filename string) (*core.Box, error) {
+func (s *boxService) Create(boxDTO core.BoxCreateRequest, tmpFilename, filename string) (*core.Box, error) {
 
 	// Getting io.Reader by opening file
 	r, err := os.Open(tmpFilename)
@@ -49,8 +60,7 @@ func (s *boxService) Create(boxDTO payload.BoxCreateRequest, tmpFilename, filena
 
 	newBox := core.Box{
 		Name:     boxDTO.Name,
-		Lat:      boxDTO.Lat,
-		Lng:      boxDTO.Lng,
+		Location: [2]float64{boxDTO.Lat, boxDTO.Lng},
 		Altitude: boxDTO.Altitude,
 		Content:  "Owner doesn't provided description yet.",
 	}

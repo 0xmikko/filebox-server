@@ -11,7 +11,6 @@ import (
 	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
-	p "github.com/MikaelLazarev/filebox-server/payload"
 	"github.com/devfeel/mapper"
 	"github.com/dgrijalva/jwt-go"
 	"time"
@@ -30,21 +29,21 @@ func NewUserService(config *config.Config, repo core.UsersRepositoryI) core.User
 }
 
 // Return User by email
-func (s *userService) Retrieve(email string) (*p.UserRes, error) {
+func (s *userService) Retrieve(email string) (*core.UserRes, error) {
 	var user core.User
 	if err := s.repository.FindByEmail(&user, email); err != nil {
 		return nil, errorhandler.DBError(err, "User not found")
 	}
 
 	// Map User to UserDTO
-	var userDTO p.UserRes
+	var userDTO core.UserRes
 	mapper.Mapper(user, &userDTO)
 
 	return &userDTO, nil
 }
 
 // Generates token pair for particular user
-func (s *userService) generateTokenPair(user *core.User) (*p.TokenPair, error) {
+func (s *userService) generateTokenPair(user *core.User) (*core.TokenPair, error) {
 	// CreateWithEmail the token
 	token := jwt.New(jwt.SigningMethodHS256)
 	// Set some claims
@@ -70,13 +69,13 @@ func (s *userService) generateTokenPair(user *core.User) (*p.TokenPair, error) {
 		return nil, err
 	}
 
-	return &p.TokenPair{
+	return &core.TokenPair{
 		Access:  tokenString,
 		Refresh: rtString,
 	}, err
 }
 
-func (s *userService) RefreshToken(refreshToken string) (*p.TokenPair, error) {
+func (s *userService) RefreshToken(refreshToken string) (*core.TokenPair, error) {
 	// Parse takes the token string and a function for looking up the key.
 	// The latter is especially useful if you use multiple keys for your application.
 	// The standard is to use 'kid' in the head of the token to identify

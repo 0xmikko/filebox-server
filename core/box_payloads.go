@@ -3,7 +3,7 @@
  * Copyright (c) 2020. Mikhail Lazarev
  */
 
-package payload
+package core
 
 type (
 	BoxCreateRequest struct {
@@ -16,5 +16,10 @@ type (
 	// UPDATE Request
 	BoxCreateResponse struct {
 		ID string `json:"id"`
+	}
+
+	BoxListResponse struct {
+		Near []Box `json:"near"`
+		Top  []Box `json:"top"`
 	}
 )
