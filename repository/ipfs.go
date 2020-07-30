@@ -10,21 +10,28 @@ import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	ipfs "github.com/ipfs/go-ipfs-api"
 	"io"
+	"strconv"
+	"time"
 )
 
 type IPFSClient struct {
-	shell *ipfs.Shell
+	shell  *ipfs.Shell
+	tmpDir string
 }
 
 func NewIPFSClient(config *config.Config) core.IPFSRepositoryI {
 	sh := ipfs.NewShell(config.IpfsEndpoint)
-	return &IPFSClient{shell: sh}
+	return &IPFSClient{shell: sh, tmpDir: config.TemporaryDir}
 }
 
 func (sh *IPFSClient) AddFile(r io.Reader) (string, error) {
 	return sh.shell.Add(r)
 }
 
-func (sh *IPFSClient) GetFile(ipfsHash string) ([]byte, error) {
-	panic("implement me")
+func (sh *IPFSClient) GetFile(ipfsHash string) (string, error) {
+	tmpFile := sh.tmpDir + strconv.Itoa(int(time.Now().Unix()))
+	if err := sh.shell.Get(ipfsHash, tmpFile); err != nil {
+		return "", err
+	}
+	return tmpFile, nil
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 )
 
 type BoxController struct {
@@ -31,7 +32,8 @@ func RegisterBoxController(config *config.Config, g *gin.Engine, ls core.BoxServ
 
 	r := g.Group("/api/boxes/") //, middlewares.JWTAuthMiddleware())
 	r.GET("/", controller.ListByCoord)
-	r.GET("/:id/", withId(controller.Retrieve))
+	r.GET("/i/:id/", withId(controller.Retrieve))
+	r.GET("/d/:id/", withId(controller.Download))
 	r.POST("/", withFile(controller.Upload))
 
 }
@@ -57,7 +59,7 @@ func (bc *BoxController) ListByCoord(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// GET: /api/boxes/:id/
+// GET: /api/boxes/i/:id/
 // Return Box info for IPFS hash
 func (bc *BoxController) Retrieve(c *gin.Context, id string) {
 	result, err := bc.service.Retrieve(id)
@@ -67,6 +69,19 @@ func (bc *BoxController) Retrieve(c *gin.Context, id string) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+// GET: /api/boxes/d/:id/
+// Return file for download
+func (bc *BoxController) Download(c *gin.Context, id string) {
+	tmpFileName, err := bc.service.Download(id)
+	if err != nil {
+		errorhandler.ResponseWithAPIError(c, err)
+		return
+	}
+
+	defer os.Remove(tmpFileName)
+	c.File(tmpFileName)
 }
 
 // POST: /api/boxes/

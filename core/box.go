@@ -30,5 +30,6 @@ type (
 		Create(req BoxCreateRequest, tmpFilename, filename string) (*Box, error)
 		FindNearAndTopBoxes(req BoxListRequest) (*BoxListResponse, error)
 		Retrieve(id string) (*Box, error)
+		Download(id string) (string, error)
 	}
 )

@@ -32,6 +32,15 @@ func (s *boxService) Retrieve(id string) (*core.Box, error) {
 	return &box, nil
 }
 
+func (s *boxService) Download(id string) (string, error) {
+	var box core.Box
+	if err := s.repository.FindOneAndIncrement(&box, id); err != nil {
+		return "", err
+	}
+
+	return s.ipfs.GetFile(box.IPFSHash)
+}
+
 // Find near & top boxes around
 func (s *boxService) FindNearAndTopBoxes(req core.BoxListRequest) (*core.BoxListResponse, error) {
 	response := core.BoxListResponse{
