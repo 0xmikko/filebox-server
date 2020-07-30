@@ -21,13 +21,13 @@ type (
 
 	BoxRepositoryI interface {
 		BaseRepositoryI
-		FindNearBoxes(*[]Box) error
+		FindNearBoxes(lat, lng float64, result *[]Box) error
 		FindTopBoxes(*[]Box) error
 	}
 
 	BoxServiceI interface {
-		Create(request BoxCreateRequest, tmpFilename, filename string) (*Box, error)
-		FindNearAndTopBoxes() (*BoxListResponse, error)
+		Create(req BoxCreateRequest, tmpFilename, filename string) (*Box, error)
+		FindNearAndTopBoxes(req BoxListRequest) (*BoxListResponse, error)
 		Retrieve(id string) (*Box, error)
 	}
 )

@@ -22,7 +22,7 @@ func NewBoxesRepository(db *mongo.Database) core.BoxRepositoryI {
 	}
 }
 
-func (repo *boxesRepository) FindNearBoxes(result *[]core.Box) error {
+func (repo *boxesRepository) FindNearBoxes(lat, lng float64, result *[]core.Box) error {
 
 	// Specify GeoJSON filter
 	filter := bson.M{
@@ -30,7 +30,7 @@ func (repo *boxesRepository) FindNearBoxes(result *[]core.Box) error {
 			"$nearSphere": bson.M{
 				"$geometry": bson.M{
 					"type":        "Point",
-					"coordinates": bson.A{-73.9667, 40.78},
+					"coordinates": bson.A{lat, lng},
 				},
 				"$maxDistance": 5000, // max Distance in meters
 			},

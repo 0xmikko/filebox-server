@@ -12,6 +12,7 @@ import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -38,7 +39,16 @@ func RegisterBoxController(config *config.Config, g *gin.Engine, ls core.BoxServ
 // GET: /api/boxes/
 // Returns array of boxes around user by his/her coordinate
 func (bc *BoxController) ListByCoord(c *gin.Context) {
-	result, err := bc.service.FindNearAndTopBoxes()
+
+	var req core.BoxListRequest
+	if err := c.BindQuery(&req); err != nil {
+		errorhandler.ResponseWithAPIError(c, errorhandler.HttpBadRequestError(errors.New("Cant get lng & lat")))
+		return
+	}
+
+	log.Println(req)
+
+	result, err := bc.service.FindNearAndTopBoxes(req)
 	if err != nil {
 		errorhandler.ResponseWithAPIError(c, err)
 		return

@@ -33,13 +33,13 @@ func (s *boxService) Retrieve(id string) (*core.Box, error) {
 }
 
 // Find near & top boxes around
-func (s *boxService) FindNearAndTopBoxes() (*core.BoxListResponse, error) {
+func (s *boxService) FindNearAndTopBoxes(req core.BoxListRequest) (*core.BoxListResponse, error) {
 	response := core.BoxListResponse{
 		Near: make([]core.Box, 0, 0),
 		Top:  make([]core.Box, 0, 0),
 	}
 
-	if err := s.repository.FindNearBoxes(&response.Near); err != nil {
+	if err := s.repository.FindNearBoxes(req.Lat, req.Lng, &response.Near); err != nil {
 		return nil, errorhandler.DBError(err, "Box not found")
 	}
 	if err := s.repository.FindTopBoxes(&response.Top); err != nil {
