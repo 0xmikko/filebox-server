@@ -21,7 +21,8 @@ type (
 
 	BoxRepositoryI interface {
 		BaseRepositoryI
-		FindNearBoxes(lat, lng float64, result *[]Box) error
+		FindOneAndIncrement(result *Box, id string) error
+		FindNearBoxes(result *[]Box, lat, lng float64) error
 		FindTopBoxes(*[]Box) error
 	}
 

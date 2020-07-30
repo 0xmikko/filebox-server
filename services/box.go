@@ -26,7 +26,7 @@ func NewBoxService(repository core.BoxRepositoryI, ir core.IPFSRepositoryI) core
 // Retrieves Box by ID
 func (s *boxService) Retrieve(id string) (*core.Box, error) {
 	var box core.Box
-	if err := s.repository.FindOne(&box, id); err != nil {
+	if err := s.repository.FindOneAndIncrement(&box, id); err != nil {
 		return nil, errorhandler.DBError(err, "Box not found")
 	}
 	return &box, nil
@@ -39,7 +39,7 @@ func (s *boxService) FindNearAndTopBoxes(req core.BoxListRequest) (*core.BoxList
 		Top:  make([]core.Box, 0, 0),
 	}
 
-	if err := s.repository.FindNearBoxes(req.Lat, req.Lng, &response.Near); err != nil {
+	if err := s.repository.FindNearBoxes(&response.Near, req.Lat, req.Lng); err != nil {
 		return nil, errorhandler.DBError(err, "Box not found")
 	}
 	if err := s.repository.FindTopBoxes(&response.Top); err != nil {

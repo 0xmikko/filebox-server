@@ -9,6 +9,7 @@ import (
 	"context"
 	"github.com/MikaelLazarev/filebox-server/core"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -22,7 +23,18 @@ func NewBoxesRepository(db *mongo.Database) core.BoxRepositoryI {
 	}
 }
 
-func (repo *boxesRepository) FindNearBoxes(lat, lng float64, result *[]core.Box) error {
+func (repo *boxesRepository) FindOneAndIncrement(result *core.Box, id string) error {
+	objId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return repo.Col.FindOneAndUpdate(context.Background(),
+		bson.M{"_id": objId},
+		bson.M{"$inc": bson.M{"opened": 1}}).
+		Decode(result)
+}
+
+func (repo *boxesRepository) FindNearBoxes(result *[]core.Box, lat, lng float64) error {
 
 	// Specify GeoJSON filter
 	filter := bson.M{
@@ -51,7 +63,10 @@ func (repo *boxesRepository) FindTopBoxes(result *[]core.Box) error {
 
 	// Specify order by downloads filter with limit 20
 	filter := bson.A{
-		bson.M{"$sort": bson.M{"downloaded": -1}},
+		bson.M{"$sort": bson.M{
+			"downloaded": -1,
+			"opened":     -1},
+		},
 		bson.M{"$limit": 20},
 	}
 
