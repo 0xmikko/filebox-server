@@ -17,14 +17,16 @@ import (
 )
 
 type userService struct {
-	repository core.UsersRepositoryI
-	jwtSecret  []byte
+	repository        core.UsersRepositoryI
+	appleLoginService *AppleLoginService
+	jwtSecret         []byte
 }
 
-func NewUserService(config *config.Config, repo core.UsersRepositoryI) core.UsersServiceI {
+func NewUserService(config *config.Config, repo core.UsersRepositoryI, as *AppleLoginService) core.UsersServiceI {
 	return &userService{
-		repository: repo,
-		jwtSecret:  []byte(config.AuthJWTSecretKey),
+		repository:        repo,
+		jwtSecret:         []byte(config.AuthJWTSecretKey),
+		appleLoginService: as,
 	}
 }
 
@@ -40,6 +42,24 @@ func (s *userService) Retrieve(email string) (*core.UserRes, error) {
 	mapper.Mapper(user, &userDTO)
 
 	return &userDTO, nil
+}
+
+func (s *userService) LoginWithApple(req *core.AppleCodeReq) (*core.TokenPair, error) {
+	appleDTO, err := s.appleLoginService.AuthWithCode(req.Code)
+	if err != nil {
+		return nil, err
+	}
+
+	var user core.User
+	if err := s.repository.FindByEmail(&user, appleDTO.Email); err != nil {
+		// if user not found - create it
+		user.Name = req.Name
+		user.Email = appleDTO.Email
+		user.Score = 0
+		user.Roles = "USER"
+		s.repository.Create(&user)
+	}
+	return s.generateTokenPair(&user)
 }
 
 // Generates token pair for particular user

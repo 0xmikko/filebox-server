@@ -74,14 +74,14 @@ func (bc *BoxController) Retrieve(c *gin.Context, id string) {
 // GET: /api/boxes/d/:id/
 // Return file for download
 func (bc *BoxController) Download(c *gin.Context, id string) {
-	tmpFileName, err := bc.service.Download(id)
+	tmpFileName, filename, err := bc.service.Download(id)
 	if err != nil {
 		errorhandler.ResponseWithAPIError(c, err)
 		return
 	}
 
 	defer os.Remove(tmpFileName)
-	c.File(tmpFileName)
+	c.FileAttachment(tmpFileName, filename)
 }
 
 // POST: /api/boxes/

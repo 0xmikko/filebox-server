@@ -43,7 +43,8 @@ func NewConfig() *Config {
 		envValue := rv.Type().Field(i).Tag.Get("env")
 		defaultValue := rv.Type().Field(i).Tag.Get("default")
 		if envValue != "" {
-			rv.Field(i).SetString(getEnv(envValue, defaultValue))
+			value := strings.Replace(getEnv(envValue, defaultValue), "\\n", "\n", -1)
+			rv.Field(i).SetString(value)
 		}
 	}
 

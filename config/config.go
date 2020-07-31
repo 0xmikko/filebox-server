@@ -6,9 +6,14 @@
 package config
 
 type Config struct {
+	AuthAppleTeamID     string `env:"AUTH_APPLE_TEAM_ID" validate:"required"`
+	AuthAppleClientID   string `env:"AUTH_APPLE_CLIENT_ID" validate:"required"`
+	AuthAppleKeyID      string `env:"AUTH_APPLE_KEY_ID" validate:"required"`
+	AuthAppleSigningKey string `env:"AUTH_APPLE_SIGNING_KEY" validate:"required"`
+
 	AuthJWTSecretKey string `env:"AUTH_JWT_SECRET" validate:"required"`
 
-	DatabaseUrl string `env:"DATABASE_URL" validate:"required"`
+	DatabaseUrl  string `env:"DATABASE_URL" validate:"required"`
 	DatabaseName string `env:"DATABASE_NAME" validate:"required"`
 
 	Env string `env:"ENV" default:"development" validate:"required"`

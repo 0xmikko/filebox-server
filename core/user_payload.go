@@ -19,4 +19,15 @@ type (
 		Name  string `json:"name"`
 		Score string `json:"score"`
 	}
+
+	AppleCodeReq struct {
+		Name string `json:"name"`
+		Code string `json:"code"`
+	}
+
+	AppleAuthResponse struct {
+		Email           string
+		EmailIsVerified bool
+		IsPrivateEmail  bool
+	}
 )

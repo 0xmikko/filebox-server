@@ -7,7 +7,7 @@ package core
 
 type (
 	User struct {
-		ID    string
+		BaseModel
 		Email string
 		Name  string
 		Score int
@@ -21,6 +21,7 @@ type (
 
 	UsersServiceI interface {
 		Retrieve(id string) (*UserRes, error)
+		LoginWithApple(req *AppleCodeReq) (*TokenPair, error)
 		RefreshToken(refreshToken string) (*TokenPair, error)
 	}
 )

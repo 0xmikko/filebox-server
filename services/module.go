@@ -9,6 +9,6 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Option(
-	fx.Provide(NewBoxService,
-		NewUserService))
+var Module = fx.Provide(NewBoxService,
+	NewUserService,
+	NewAppleLoginService)
