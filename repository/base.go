@@ -36,6 +36,7 @@ func (basicRepo *BaseRepository) FindAll(result interface{}) error {
 }
 
 func (basicRepo *BaseRepository) Create(item core.BaseModelI) error {
+	item.SetCreatedAt()
 	result, err := basicRepo.Col.InsertOne(context.Background(), item)
 	item.SetID(result.InsertedID.(primitive.ObjectID))
 	return err
@@ -43,6 +44,7 @@ func (basicRepo *BaseRepository) Create(item core.BaseModelI) error {
 
 func (basicRepo *BaseRepository) Save(item core.BaseModelI) error {
 	id := item.GetID()
+	item.SetUpdatedAt()
 	result, error := basicRepo.Col.UpdateOne(context.Background(),
 		bson.M{"_id": id},
 		bson.M{"$set": item},

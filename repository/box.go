@@ -11,6 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 type boxesRepository struct {
@@ -18,6 +20,12 @@ type boxesRepository struct {
 }
 
 func NewBoxesRepository(db *mongo.Database) core.BoxRepositoryI {
+
+	str, err := db.Collection("boxes").Indexes().CreateOne(context.Background(), mongo.IndexModel{
+		Keys:    bson.M{"location": "2dsphere"},
+		Options: options.Index().SetSphereVersion(3),
+	})
+	log.Println("INDEX", str, err)
 	return &boxesRepository{
 		BaseRepository{Col: db.Collection("boxes")},
 	}
