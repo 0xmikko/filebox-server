@@ -10,6 +10,7 @@ import (
 	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/controllers"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
+	"github.com/MikaelLazarev/filebox-server/middlewares"
 	"github.com/MikaelLazarev/filebox-server/repository"
 	"github.com/MikaelLazarev/filebox-server/services"
 	"log"
@@ -27,6 +28,7 @@ func main() {
 		// much on its own.
 		config.Module,
 		errorhandler.Module,
+		middlewares.Module,
 		controllers.Module,
 		repository.Module,
 		services.Module,
@@ -38,7 +40,6 @@ func main() {
 		// NewMux, we also register Lifecycle hooks to start and stop an HTTP
 		// server.
 		fx.Invoke(controllers.StartServer),
-
 	)
 
 	startCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)

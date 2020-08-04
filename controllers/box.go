@@ -11,6 +11,7 @@ import (
 	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/core"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
+	"github.com/MikaelLazarev/filebox-server/middlewares"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -30,9 +31,9 @@ func RegisterBoxController(config *config.Config, g *gin.Engine, ls core.BoxServ
 		tempDir: config.TemporaryDir,
 	}
 
-	r := g.Group("/api/boxes/") //, middlewares.JWTAuthMiddleware())
+	r := g.Group("/api/boxes/", middlewares.JWTAuthMiddleware())
 	r.GET("/", controller.ListByCoord)
-	r.GET("/i/:id/", withId(controller.Retrieve))
+	r.GET("/i/:id/", withPrincipalAndId(controller.Retrieve))
 	r.GET("/d/:id/", withId(controller.Download))
 	r.POST("/", withFile(controller.Upload))
 
@@ -61,7 +62,8 @@ func (bc *BoxController) ListByCoord(c *gin.Context) {
 
 // GET: /api/boxes/i/:id/
 // Return Box info for IPFS hash
-func (bc *BoxController) Retrieve(c *gin.Context, id string) {
+func (bc *BoxController) Retrieve(c *gin.Context, userId, id string) {
+	log.Println("USER ID:", userId)
 	result, err := bc.service.Retrieve(id)
 	if err != nil {
 		errorhandler.ResponseWithAPIError(c, err)

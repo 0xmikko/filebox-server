@@ -9,7 +9,7 @@ type (
 	Location [2]float64
 
 	Box struct {
-		BaseModel
+		BaseModel  `bson:",inline"`
 		IPFSHash   string   `json:"ipfsHash"`
 		Name       string   `json:"name"`
 		Location   Location `json:"location"`

@@ -7,11 +7,11 @@ package core
 
 type (
 	User struct {
-		BaseModel
-		Email string
-		Name  string
-		Score int
-		Roles string
+		BaseModel `bson:",inline"`
+		Email     string
+		Name      string
+		Score     int
+		Roles     string
 	}
 
 	UsersRepositoryI interface {

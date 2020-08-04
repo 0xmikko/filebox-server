@@ -7,6 +7,7 @@ package middlewares
 import (
 	"github.com/MikaelLazarev/filebox-server/config"
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
+	"log"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -17,12 +18,15 @@ var signingKey []byte
 
 func InitJWTAuthMiddleware(config *config.Config) {
 	signingKey = []byte(config.AuthJWTSecretKey)
+	log.Println(signingKey)
 }
 
 func JWTAuthMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		if err := JWTAuth(c); err != nil {
+			log.Println(err)
+			c.Abort()
 			return
 		}
 		c.Next()

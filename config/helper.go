@@ -43,7 +43,7 @@ func NewConfig() *Config {
 		envValue := rv.Type().Field(i).Tag.Get("env")
 		defaultValue := rv.Type().Field(i).Tag.Get("default")
 		if envValue != "" {
-			value := strings.Replace(getEnv(envValue, defaultValue), "\\n", "\n", -1)
+			value := strings.Replace(GetEnv(envValue, defaultValue), "\\n", "\n", -1)
 			rv.Field(i).SetString(value)
 		}
 	}
@@ -54,7 +54,7 @@ func NewConfig() *Config {
 
 }
 
-func getEnv(key, fallback string) string {
+func GetEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}

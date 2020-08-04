@@ -13,6 +13,7 @@ import (
 	"github.com/MikaelLazarev/filebox-server/errorhandler"
 	"github.com/devfeel/mapper"
 	"github.com/dgrijalva/jwt-go"
+	"log"
 	"time"
 )
 
@@ -59,40 +60,12 @@ func (s *userService) LoginWithApple(req *core.AppleCodeReq) (*core.TokenPair, e
 		user.Roles = "USER"
 		s.repository.Create(&user)
 	}
+
+	if user.ID.IsZero() {
+		log.Println("ZERO ID")
+	}
+
 	return s.generateTokenPair(&user)
-}
-
-// Generates token pair for particular user
-func (s *userService) generateTokenPair(user *core.User) (*core.TokenPair, error) {
-	// CreateWithEmail the token
-	token := jwt.New(jwt.SigningMethodHS256)
-	// Set some claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["user_id"] = user.ID
-	claims["roles"] = user.Roles
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
-	// Sign and get the complete encoded token as a string
-	tokenString, err := token.SignedString(s.jwtSecret)
-	if err != nil {
-		errorhandler.ReportError(err)
-		return nil, err
-	}
-
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["user_id"] = user.ID
-	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-	rtString, err := refreshToken.SignedString(s.jwtSecret)
-
-	if err != nil {
-		errorhandler.ReportError(err)
-		return nil, err
-	}
-
-	return &core.TokenPair{
-		Access:  tokenString,
-		Refresh: rtString,
-	}, err
 }
 
 func (s *userService) RefreshToken(refreshToken string) (*core.TokenPair, error) {
@@ -126,10 +99,43 @@ func (s *userService) RefreshToken(refreshToken string) (*core.TokenPair, error)
 		var user core.User
 
 		if err := s.repository.FindOne(&user, user_id); err != nil {
-			return nil, err
+			return nil, errorhandler.DBError(err, "User not found")
 		}
 		return s.generateTokenPair(&user)
 
 	}
 	return nil, errorhandler.ForbiddenError(errors.New("Refresh token problem"))
+}
+
+// Generates token pair for particular user
+func (s *userService) generateTokenPair(user *core.User) (*core.TokenPair, error) {
+	// CreateWithEmail the token
+	token := jwt.New(jwt.SigningMethodHS256)
+	// Set some claims
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = user.ID
+	claims["roles"] = user.Roles
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+	// Sign and get the complete encoded token as a string
+	tokenString, err := token.SignedString(s.jwtSecret)
+	if err != nil {
+		errorhandler.ReportError(err)
+		return nil, err
+	}
+
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	rtClaims["user_id"] = user.ID
+	rtClaims["exp"] = time.Now().Add(time.Hour * 24 * 30 * 6).Unix()
+	rtString, err := refreshToken.SignedString(s.jwtSecret)
+
+	if err != nil {
+		errorhandler.ReportError(err)
+		return nil, err
+	}
+
+	return &core.TokenPair{
+		Access:  tokenString,
+		Refresh: rtString,
+	}, err
 }

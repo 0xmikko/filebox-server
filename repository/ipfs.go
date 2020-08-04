@@ -10,6 +10,7 @@ import (
 	"github.com/MikaelLazarev/filebox-server/core"
 	ipfs "github.com/ipfs/go-ipfs-api"
 	"io"
+	"os"
 	"strconv"
 	"time"
 )
@@ -21,6 +22,10 @@ type IPFSClient struct {
 
 func NewIPFSClient(config *config.Config) core.IPFSRepositoryI {
 	sh := ipfs.NewShell(config.IpfsEndpoint)
+	tmpDir, err := os.Stat(config.TemporaryDir)
+	if os.IsNotExist(err) || !tmpDir.IsDir() {
+		os.Mkdir(config.TemporaryDir, os.FileMode(0755))
+	}
 	return &IPFSClient{shell: sh, tmpDir: config.TemporaryDir}
 }
 
